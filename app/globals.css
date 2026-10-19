@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --rust: #C44514;
+  --cream: #F5EEE4;
+  --brown: #5A2410;
+  --peach: #EBCBB8;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    background-color: #F5EEE4;
+    color: #5A2410;
+  }
+
+  ::selection {
+    background-color: #C44514;
+    color: #F5EEE4;
+  }
+
+  /* Accessible focus indicators */
+  :focus-visible {
+    outline: 2px solid #C44514;
+    outline-offset: 2px;
+  }
+}
+
+/* Restrained animations */
+@keyframes spinSlow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spinSlow 60s linear infinite;
+}
+
+/* Strict prefers-reduced-motion compliance */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .animate-spin-slow {
+    animation: none !important;
+  }
+}
+
+/* Instant preloader hide on return session visits */
+html.preloader-skipped #ambrew-preloader {
+  display: none !important;
+}
+
