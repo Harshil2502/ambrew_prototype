@@ -45,7 +45,7 @@ export function BrewGuideSection() {
               >
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 items-center">
                   {/* Left: Boxed Line Icon + Method Name (No micro-numbers) */}
-                  <div className="lg:col-span-6 flex items-center gap-4 sm:gap-6">
+                  <div className="lg:col-span-6 flex items-center gap-4 sm:gap-6 px-4">
                     <BoxedBrewIcon
                       type={method.icon}
                       size={44}

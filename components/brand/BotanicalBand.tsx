@@ -17,12 +17,12 @@ export function BotanicalBand({
   const isVertical = orientation === 'vertical';
 
   return (
-    <div
+    <>
+       {isVertical ? ( <div
       className={`relative bg-rust overflow-hidden ${className}`}
       aria-hidden="true"
     >
-      {isVertical ? (
-        /* Vertical Botanical Panel (viewBox: 200 1000) */
+
         <svg
           className="w-full h-full object-cover"
           viewBox="0 0 200 1000"
@@ -149,84 +149,12 @@ export function BotanicalBand({
             <circle cx="90" cy="945" r="7" fill="#C44514" stroke="#F5EEE4" strokeWidth="1.25" />
           </g>
         </svg>
-      ) : (
+  
+    </div>    ) : (
         /* Horizontal Botanical Strip (viewBox: 1000 100) */
-        <svg
-          className="w-full h-full object-cover"
-          viewBox="0 0 1000 100"
-          preserveAspectRatio="xMidYMid slice"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          {/* Hairline Edge Guide */}
-          <line
-            x1="0"
-            y1="99.5"
-            x2="1000"
-            y2="99.5"
-            stroke="#F5EEE4"
-            strokeOpacity="0.25"
-            strokeWidth="1"
-          />
-
-          <g stroke="#F5EEE4" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" opacity="0.95">
-            {/* Horizontal Stem */}
-            <path
-              d="M 0,50 C 70,40 140,65 210,48 C 280,32 350,68 420,50 C 490,34 560,70 630,52 C 700,36 770,66 840,50 C 910,35 960,58 1000,50"
-              strokeWidth="1.75"
-            />
-
-            {/* Node 1: x ~ 100 */}
-            <path d="M 90,46 C 105,15 135,8 160,15 C 148,35 125,44 95,49" fill="#C44514" />
-            <path d="M 90,46 Q 130,28 160,15" strokeWidth="0.9" />
-            <path d="M 105,55 C 120,85 150,92 175,85 C 160,65 138,58 110,53" fill="#C44514" />
-            <circle cx="98" cy="45" r="6" fill="#C44514" stroke="#F5EEE4" strokeWidth="1.2" />
-            <circle cx="106" cy="54" r="5.5" fill="#C44514" stroke="#F5EEE4" strokeWidth="1.2" />
-
-            {/* Bean 1 */}
-            <g transform="translate(200, 25) rotate(-20)">
-              <ellipse cx="0" cy="0" rx="8" ry="5" fill="#C44514" stroke="#F5EEE4" strokeWidth="1.1" />
-              <path d="M -6,0 Q 0,2 6,0" stroke="#F5EEE4" strokeWidth="1" />
-            </g>
-
-            {/* Node 2: x ~ 310 */}
-            <path d="M 300,42 C 315,12 345,5 370,12 C 358,32 335,40 305,45" fill="#C44514" />
-            <path d="M 315,50 C 330,80 360,88 385,82 C 370,62 348,54 320,50" fill="#C44514" />
-            <circle cx="308" cy="40" r="6" fill="#C44514" stroke="#F5EEE4" strokeWidth="1.2" />
-            <circle cx="316" cy="49" r="6" fill="#C44514" stroke="#F5EEE4" strokeWidth="1.2" />
-            <circle cx="305" cy="52" r="5" fill="#C44514" stroke="#F5EEE4" strokeWidth="1.2" />
-
-            {/* Bean 2 */}
-            <g transform="translate(430, 80) rotate(25)">
-              <ellipse cx="0" cy="0" rx="8" ry="5" fill="#C44514" stroke="#F5EEE4" strokeWidth="1.1" />
-              <path d="M -6,0 Q 0,-2 6,0" stroke="#F5EEE4" strokeWidth="1" />
-            </g>
-
-            {/* Node 3: x ~ 530 */}
-            <path d="M 520,44 C 535,14 565,6 590,14 C 578,34 555,42 525,47" fill="#C44514" />
-            <path d="M 535,52 C 550,82 580,90 605,84 C 590,64 568,56 540,51" fill="#C44514" />
-            <circle cx="528" cy="42" r="6" fill="#C44514" stroke="#F5EEE4" strokeWidth="1.2" />
-            <circle cx="536" cy="51" r="5.5" fill="#C44514" stroke="#F5EEE4" strokeWidth="1.2" />
-
-            {/* Bean 3 */}
-            <g transform="translate(650, 22) rotate(-15)">
-              <ellipse cx="0" cy="0" rx="8.5" ry="5" fill="#C44514" stroke="#F5EEE4" strokeWidth="1.1" />
-              <path d="M -6,0 Q 0,2 6,0" stroke="#F5EEE4" strokeWidth="1" />
-            </g>
-
-            {/* Node 4: x ~ 740 */}
-            <path d="M 730,42 C 745,12 775,5 800,12 C 788,32 765,40 735,45" fill="#C44514" />
-            <path d="M 745,50 C 760,80 790,88 815,82 C 800,62 778,54 750,49" fill="#C44514" />
-            <circle cx="738" cy="40" r="6" fill="#C44514" stroke="#F5EEE4" strokeWidth="1.2" />
-            <circle cx="746" cy="49" r="6" fill="#C44514" stroke="#F5EEE4" strokeWidth="1.2" />
-
-            {/* Node 5: x ~ 920 */}
-            <circle cx="920" cy="42" r="6" fill="#C44514" stroke="#F5EEE4" strokeWidth="1.2" />
-            <circle cx="930" cy="50" r="5.5" fill="#C44514" stroke="#F5EEE4" strokeWidth="1.2" />
-          </g>
-        </svg>
+      <> </>
       )}
-    </div>
+    </>
   );
 }
 

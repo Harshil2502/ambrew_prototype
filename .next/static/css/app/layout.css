@@ -2328,6 +2328,11 @@ html.preloader-skipped #ambrew-preloader {
     margin-bottom: 3rem;
   }
 
+  .lg\:my-8 {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+  }
+
   .lg\:block {
     display: block;
   }

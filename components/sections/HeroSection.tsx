@@ -50,9 +50,9 @@ export function HeroSection() {
   return (
     <section className="relative bg-cream border-b border-brown/15 overflow-hidden">
       {/* Mobile: Top botanical strip */}
-      <div className="lg:hidden h-14 w-full">
+      {/* <div className="lg:hidden h-14 w-full"> */}
         <BotanicalBand orientation="horizontal" className="h-full w-full" />
-      </div>
+      {/* </div> */}
 
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 min-h-[640px] lg:min-h-[720px]">
         {/* Left Editorial Area (7 cols on desktop) */}
@@ -71,7 +71,7 @@ export function HeroSection() {
           </div>
 
           {/* Main Headline & Calm Statement */}
-          <div className="my-8 lg:my-12 max-w-xl">
+          <div className="my-4 lg:my-8 max-w-xl">
             <h1 className="font-serif text-[clamp(2.75rem,5.5vw+1rem,5.5rem)] font-bold text-brown leading-[1.02] tracking-tight">
               Every morning deserves a sunrise.
             </h1>
