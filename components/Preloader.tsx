@@ -13,8 +13,6 @@ const PHRASES = [
 export function Preloader() {
   const shouldReduceMotion = useReducedMotion();
   const [isMounted, setIsMounted] = useState(true);
-  const [minTimeElapsed, setMinTimeElapsed] = useState(false);
-  const [pageReady, setPageReady] = useState(false);
   const [exitPhase, setExitPhase] = useState<'idle' | 'cup-fading' | 'curtain-lifting'>('idle');
   const [phraseIdx, setPhraseIdx] = useState(0);
 
@@ -27,6 +25,7 @@ export function Preloader() {
 
       if (hasSeen && !forceReplay) {
         setIsMounted(false);
+        document.body.style.overflow = '';
         return;
       }
       sessionStorage.setItem('ambrew_preloader_seen', 'true');
@@ -37,43 +36,104 @@ export function Preloader() {
     // Lock page scroll while preloader is active
     document.body.style.overflow = 'hidden';
 
-    // Reduced motion shortcut
-    if (shouldReduceMotion) {
-      const reducedTimer = setTimeout(() => {
+    let exitStarted = false;
+
+    // Bulletproof two-stage exit:
+    // Stage 1: Cup slides slightly down and fades (~220ms) against stationary cream screen.
+    // Stage 2: Cream screen lifts upward like a curtain (~480ms), revealing hero.
+    // Stage 3: Fully unmount from DOM and restore body overflow.
+    const executeExit = () => {
+      if (exitStarted) return;
+      exitStarted = true;
+
+      if (shouldReduceMotion) {
         setExitPhase('curtain-lifting');
+        document.body.style.overflow = '';
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('ambrew:hero-enter'));
+        }
         setTimeout(() => {
-          document.body.style.overflow = '';
           setIsMounted(false);
         }, 300);
-      }, 300);
-      return () => clearTimeout(reducedTimer);
-    }
+        return;
+      }
+
+      // Stage 1: Cup fades
+      setExitPhase('cup-fading');
+
+      // Stage 2: Curtain lifts and hero animation triggers
+      setTimeout(() => {
+        setExitPhase('curtain-lifting');
+        document.body.style.overflow = '';
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('ambrew:hero-enter'));
+        }
+      }, 220);
+
+      // Stage 3: Fully unmount from DOM after curtain has cleared
+      setTimeout(() => {
+        document.body.style.overflow = '';
+        setIsMounted(false);
+      }, 750);
+    };
+
+    let isMinTimeElapsed = false;
+    let isDocReady = false;
+
+    const maybeExit = () => {
+      if (isMinTimeElapsed && isDocReady) {
+        executeExit();
+      }
+    };
 
     // Minimum display timer: ~2.2s
     const minTimer = setTimeout(() => {
-      setMinTimeElapsed(true);
+      isMinTimeElapsed = true;
+      maybeExit();
     }, 2200);
-
-    // Maximum cap timer: 4.0s
-    const maxTimer = setTimeout(() => {
-      setMinTimeElapsed(true);
-      setPageReady(true);
-    }, 4000);
 
     // Document readiness check (window load + document.fonts.ready)
     const checkReadiness = () => {
       if (typeof document !== 'undefined' && document.fonts && document.fonts.ready) {
-        document.fonts.ready.then(() => setPageReady(true)).catch(() => setPageReady(true));
+        document.fonts.ready
+          .then(() => {
+            isDocReady = true;
+            maybeExit();
+          })
+          .catch(() => {
+            isDocReady = true;
+            maybeExit();
+          });
       } else {
-        setPageReady(true);
+        isDocReady = true;
+        maybeExit();
       }
     };
 
-    if (document.readyState === 'complete') {
+    if (
+      typeof document !== 'undefined' &&
+      (document.readyState === 'complete' || document.readyState === 'interactive')
+    ) {
       checkReadiness();
     } else {
       window.addEventListener('load', checkReadiness, { once: true });
     }
+
+    // Maximum cap timer: 4.0s (Safety guarantee)
+    const maxTimer = setTimeout(() => {
+      isMinTimeElapsed = true;
+      isDocReady = true;
+      executeExit();
+    }, 4000);
+
+    // Hard fallback: Absolute guarantee that preloader unmounts after 4.5s
+    const absoluteFallback = setTimeout(() => {
+      document.body.style.overflow = '';
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('ambrew:hero-enter'));
+      }
+      setIsMounted(false);
+    }, 4500);
 
     // Phrase cycling every ~1.2s
     const phraseInterval = setInterval(() => {
@@ -83,30 +143,11 @@ export function Preloader() {
     return () => {
       clearTimeout(minTimer);
       clearTimeout(maxTimer);
+      clearTimeout(absoluteFallback);
       clearInterval(phraseInterval);
       document.body.style.overflow = '';
     };
   }, [shouldReduceMotion]);
-
-  // Two-stage exit:
-  // Stage 1: Cup slides slightly down and fades (~220ms) against stationary cream screen.
-  // Stage 2: Cream screen lifts upward like a curtain (~480ms), revealing hero.
-  useEffect(() => {
-    if (minTimeElapsed && pageReady && exitPhase === 'idle') {
-      if (shouldReduceMotion) {
-        setExitPhase('curtain-lifting');
-      } else {
-        setExitPhase('cup-fading');
-        const liftTimer = setTimeout(() => {
-          setExitPhase('curtain-lifting');
-          if (typeof window !== 'undefined') {
-            window.dispatchEvent(new CustomEvent('ambrew:hero-enter'));
-          }
-        }, 220);
-        return () => clearTimeout(liftTimer);
-      }
-    }
-  }, [minTimeElapsed, pageReady, exitPhase, shouldReduceMotion]);
 
   if (!isMounted) return null;
 
@@ -115,7 +156,9 @@ export function Preloader() {
       id="ambrew-preloader"
       role="status"
       aria-live="polite"
-      className="fixed inset-0 z-[100] bg-cream flex flex-col items-center justify-center select-none"
+      className={`fixed inset-0 z-[100] bg-cream flex flex-col items-center justify-center select-none ${
+        exitPhase !== 'idle' ? 'pointer-events-none' : ''
+      }`}
       initial={{ y: 0, opacity: 1 }}
       animate={
         exitPhase === 'curtain-lifting'
